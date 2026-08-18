@@ -15,8 +15,12 @@ public class Task {
         this.isDone = false;
     }
 
+    protected String statusIcon() {
+        return "[" + (isDone ? "X" : " ") + "]";
+    }
+
     @Override
     public String toString() {
-        return "[" + (isDone ? "X" : " ") + "] " + description;
+        return statusIcon() + " " + description;
     }
 }
