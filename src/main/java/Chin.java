@@ -1,9 +1,9 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Chin {
     private static final String LINE = "____________________________________________________________";
-    private static final Task[] tasks = new Task[100];
-    private static int count = 0;
+    private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
         System.out.println(LINE);
@@ -33,36 +33,44 @@ public class Chin {
 
     private static void handle(String input) throws ChinException {
         if (input.equals("list")) {
-            for (int i = 0; i < count; i++) {
-                System.out.println(" " + (i + 1) + "." + tasks[i]);
+            for (int i = 0; i < tasks.size(); i++) {
+                System.out.println(" " + (i + 1) + "." + tasks.get(i));
             }
             return;
         }
         if (input.startsWith("mark ")) {
             int idx = parseIndex(input.substring(5));
-            tasks[idx].mark();
+            tasks.get(idx).mark();
             System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks[idx]);
+            System.out.println("   " + tasks.get(idx));
             return;
         }
         if (input.startsWith("unmark ")) {
             int idx = parseIndex(input.substring(7));
-            tasks[idx].unmark();
+            tasks.get(idx).unmark();
             System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks[idx]);
+            System.out.println("   " + tasks.get(idx));
+            return;
+        }
+        if (input.startsWith("delete ")) {
+            int idx = parseIndex(input.substring(7));
+            Task removed = tasks.remove(idx);
+            System.out.println(" Noted. I've removed this task:");
+            System.out.println("   " + removed);
+            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
             return;
         }
         Task t = parseNewTask(input);
-        tasks[count++] = t;
+        tasks.add(t);
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + t);
-        System.out.println(" Now you have " + count + " tasks in the list.");
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
     }
 
     private static int parseIndex(String s) throws ChinException {
         try {
             int idx = Integer.parseInt(s.trim()) - 1;
-            if (idx < 0 || idx >= count) {
+            if (idx < 0 || idx >= tasks.size()) {
                 throw new ChinException("OOPS!!! That task number is out of range.");
             }
             return idx;
