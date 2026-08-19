@@ -14,7 +14,7 @@ public class Chin {
         Scanner sc = new Scanner(System.in);
         while (sc.hasNextLine()) {
             String input = sc.nextLine();
-            if (input.equals("bye")) {
+            if (Command.fromInput(input) == Command.BYE) {
                 break;
             }
             System.out.println(LINE);
@@ -32,27 +32,28 @@ public class Chin {
     }
 
     private static void handle(String input) throws ChinException {
-        if (input.equals("list")) {
+        Command cmd = Command.fromInput(input);
+        switch (cmd) {
+        case LIST:
             for (int i = 0; i < tasks.size(); i++) {
                 System.out.println(" " + (i + 1) + "." + tasks.get(i));
             }
             return;
-        }
-        if (input.startsWith("mark ")) {
+        case MARK: {
             int idx = parseIndex(input.substring(5));
             tasks.get(idx).mark();
             System.out.println(" Nice! I've marked this task as done:");
             System.out.println("   " + tasks.get(idx));
             return;
         }
-        if (input.startsWith("unmark ")) {
+        case UNMARK: {
             int idx = parseIndex(input.substring(7));
             tasks.get(idx).unmark();
             System.out.println(" OK, I've marked this task as not done yet:");
             System.out.println("   " + tasks.get(idx));
             return;
         }
-        if (input.startsWith("delete ")) {
+        case DELETE: {
             int idx = parseIndex(input.substring(7));
             Task removed = tasks.remove(idx);
             System.out.println(" Noted. I've removed this task:");
@@ -60,11 +61,19 @@ public class Chin {
             System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
             return;
         }
-        Task t = parseNewTask(input);
-        tasks.add(t);
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + t);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+        case TODO:
+        case DEADLINE:
+        case EVENT: {
+            Task t = parseNewTask(cmd, input);
+            tasks.add(t);
+            System.out.println(" Got it. I've added this task:");
+            System.out.println("   " + t);
+            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            return;
+        }
+        default:
+            throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+        }
     }
 
     private static int parseIndex(String s) throws ChinException {
@@ -79,15 +88,16 @@ public class Chin {
         }
     }
 
-    private static Task parseNewTask(String input) throws ChinException {
-        if (input.equals("todo") || input.startsWith("todo ")) {
+    private static Task parseNewTask(Command cmd, String input) throws ChinException {
+        switch (cmd) {
+        case TODO: {
             String desc = input.length() > 4 ? input.substring(5).trim() : "";
             if (desc.isEmpty()) {
                 throw new ChinException("OOPS!!! The description of a todo cannot be empty.");
             }
             return new Todo(desc);
         }
-        if (input.equals("deadline") || input.startsWith("deadline ")) {
+        case DEADLINE: {
             String body = input.length() > 8 ? input.substring(9) : "";
             int i = body.indexOf(" /by ");
             if (i < 0 || body.substring(0, i).trim().isEmpty() || body.substring(i + 5).trim().isEmpty()) {
@@ -95,7 +105,7 @@ public class Chin {
             }
             return new Deadline(body.substring(0, i).trim(), body.substring(i + 5).trim());
         }
-        if (input.equals("event") || input.startsWith("event ")) {
+        case EVENT: {
             String body = input.length() > 5 ? input.substring(6) : "";
             int f = body.indexOf(" /from ");
             int t = body.indexOf(" /to ");
@@ -109,6 +119,8 @@ public class Chin {
                     body.substring(f + 7, t).trim(),
                     body.substring(t + 5).trim());
         }
-        throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+        default:
+            throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+        }
     }
 }
