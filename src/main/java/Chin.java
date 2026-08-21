@@ -1,11 +1,19 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Chin {
     private static final String LINE = "____________________________________________________________";
+    private static final Path DATA_FILE = Path.of("data", "chin.txt");
     private static final ArrayList<Task> tasks = new ArrayList<>();
 
     public static void main(String[] args) {
+        loadFromDisk();
+
         System.out.println(LINE);
         System.out.println(" Hello! I'm Chin");
         System.out.println(" What can I do for you?");
@@ -20,6 +28,7 @@ public class Chin {
             System.out.println(LINE);
             try {
                 handle(input);
+                saveToDisk();
             } catch (ChinException e) {
                 System.out.println(" " + e.getMessage());
             }
@@ -122,5 +131,61 @@ public class Chin {
         default:
             throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
         }
+    }
+
+    private static void loadFromDisk() {
+        if (!Files.exists(DATA_FILE)) {
+            return;
+        }
+        try {
+            List<String> lines = Files.readAllLines(DATA_FILE);
+            for (String line : lines) {
+                Task t = deserialize(line);
+                if (t != null) {
+                    tasks.add(t);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(" (warning: could not load saved tasks: " + e.getMessage() + ")");
+        }
+    }
+
+    private static void saveToDisk() {
+        try {
+            Files.createDirectories(DATA_FILE.getParent());
+            try (PrintWriter pw = new PrintWriter(DATA_FILE.toFile())) {
+                for (Task t : tasks) {
+                    pw.println(t.serialize());
+                }
+            }
+        } catch (IOException e) {
+            System.out.println(" (warning: could not save tasks: " + e.getMessage() + ")");
+        }
+    }
+
+    private static Task deserialize(String line) {
+        String[] parts = line.split(" \\| ");
+        if (parts.length < 3) {
+            return null;
+        }
+        boolean done = parts[1].equals("1");
+        Task t;
+        switch (parts[0]) {
+        case "T":
+            t = new Todo(parts[2]);
+            break;
+        case "D":
+            if (parts.length < 4) return null;
+            t = new Deadline(parts[2], parts[3]);
+            break;
+        case "E":
+            if (parts.length < 5) return null;
+            t = new Event(parts[2], parts[3], parts[4]);
+            break;
+        default:
+            return null;
+        }
+        if (done) t.mark();
+        return t;
     }
 }
