@@ -1,5 +1,9 @@
+package chin.util;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import chin.task.Task;
 
 public class TaskList {
     private final ArrayList<Task> tasks;

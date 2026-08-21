@@ -1,9 +1,16 @@
+package chin.util;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import chin.task.Deadline;
+import chin.task.Event;
+import chin.task.Task;
+import chin.task.Todo;
 
 public class Storage {
     private final Path file;
