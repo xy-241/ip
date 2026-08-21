@@ -1,83 +1,73 @@
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 public class Chin {
-    private static final String LINE = "____________________________________________________________";
-    private static final Path DATA_FILE = Path.of("data", "chin.txt");
-    private static final ArrayList<Task> tasks = new ArrayList<>();
+    private final Ui ui;
+    private final Storage storage;
+    private final TaskList tasks;
 
-    public static void main(String[] args) {
-        loadFromDisk();
-
-        System.out.println(LINE);
-        System.out.println(" Hello! I'm Chin");
-        System.out.println(" What can I do for you?");
-        System.out.println(LINE);
-
-        Scanner sc = new Scanner(System.in);
-        while (sc.hasNextLine()) {
-            String input = sc.nextLine();
-            if (Command.fromInput(input) == Command.BYE) {
-                break;
-            }
-            System.out.println(LINE);
-            try {
-                handle(input);
-                saveToDisk();
-            } catch (ChinException e) {
-                System.out.println(" " + e.getMessage());
-            }
-            System.out.println(LINE);
-        }
-
-        System.out.println(LINE);
-        System.out.println(" Bye. Hope to see you again soon!");
-        System.out.println(LINE);
+    public Chin(Path dataFile) {
+        this.ui = new Ui();
+        this.storage = new Storage(dataFile);
+        this.tasks = new TaskList(storage.load());
     }
 
-    private static void handle(String input) throws ChinException {
-        Command cmd = Command.fromInput(input);
+    public void run() {
+        ui.showWelcome();
+        while (true) {
+            String input = ui.readCommand();
+            Command cmd = Command.fromInput(input);
+            if (cmd == Command.BYE) {
+                break;
+            }
+            ui.showLine();
+            try {
+                handle(cmd, input);
+                storage.save(tasks.asList());
+            } catch (ChinException e) {
+                ui.showError(e.getMessage());
+            }
+            ui.showLine();
+        }
+        ui.showGoodbye();
+    }
+
+    private void handle(Command cmd, String input) throws ChinException {
         switch (cmd) {
         case LIST:
             for (int i = 0; i < tasks.size(); i++) {
-                System.out.println(" " + (i + 1) + "." + tasks.get(i));
+                ui.show((i + 1) + "." + tasks.get(i));
             }
             return;
         case MARK: {
-            int idx = parseIndex(input.substring(5));
+            int idx = Parser.parseIndex(input.substring(5), tasks.size());
             tasks.get(idx).mark();
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + tasks.get(idx));
+            ui.show("Nice! I've marked this task as done:");
+            ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case UNMARK: {
-            int idx = parseIndex(input.substring(7));
+            int idx = Parser.parseIndex(input.substring(7), tasks.size());
             tasks.get(idx).unmark();
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + tasks.get(idx));
+            ui.show("OK, I've marked this task as not done yet:");
+            ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case DELETE: {
-            int idx = parseIndex(input.substring(7));
+            int idx = Parser.parseIndex(input.substring(7), tasks.size());
             Task removed = tasks.remove(idx);
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + removed);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            ui.show("Noted. I've removed this task:");
+            ui.showIndented(removed.toString());
+            ui.show("Now you have " + tasks.size() + " tasks in the list.");
             return;
         }
         case TODO:
         case DEADLINE:
         case EVENT: {
-            Task t = parseNewTask(cmd, input);
+            Task t = Parser.parseNewTask(cmd, input);
             tasks.add(t);
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + t);
-            System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+            ui.show("Got it. I've added this task:");
+            ui.showIndented(t.toString());
+            ui.show("Now you have " + tasks.size() + " tasks in the list.");
             return;
         }
         default:
@@ -85,111 +75,7 @@ public class Chin {
         }
     }
 
-    private static int parseIndex(String s) throws ChinException {
-        try {
-            int idx = Integer.parseInt(s.trim()) - 1;
-            if (idx < 0 || idx >= tasks.size()) {
-                throw new ChinException("OOPS!!! That task number is out of range.");
-            }
-            return idx;
-        } catch (NumberFormatException e) {
-            throw new ChinException("OOPS!!! Task number must be an integer.");
-        }
-    }
-
-    private static Task parseNewTask(Command cmd, String input) throws ChinException {
-        switch (cmd) {
-        case TODO: {
-            String desc = input.length() > 4 ? input.substring(5).trim() : "";
-            if (desc.isEmpty()) {
-                throw new ChinException("OOPS!!! The description of a todo cannot be empty.");
-            }
-            return new Todo(desc);
-        }
-        case DEADLINE: {
-            String body = input.length() > 8 ? input.substring(9) : "";
-            int i = body.indexOf(" /by ");
-            if (i < 0 || body.substring(0, i).trim().isEmpty() || body.substring(i + 5).trim().isEmpty()) {
-                throw new ChinException("OOPS!!! A deadline needs a description and ' /by <when>'.");
-            }
-            return new Deadline(body.substring(0, i).trim(), body.substring(i + 5).trim());
-        }
-        case EVENT: {
-            String body = input.length() > 5 ? input.substring(6) : "";
-            int f = body.indexOf(" /from ");
-            int t = body.indexOf(" /to ");
-            if (f < 0 || t < 0 || t < f
-                    || body.substring(0, f).trim().isEmpty()
-                    || body.substring(f + 7, t).trim().isEmpty()
-                    || body.substring(t + 5).trim().isEmpty()) {
-                throw new ChinException("OOPS!!! An event needs a description, ' /from <start>' and ' /to <end>'.");
-            }
-            return new Event(body.substring(0, f).trim(),
-                    body.substring(f + 7, t).trim(),
-                    body.substring(t + 5).trim());
-        }
-        default:
-            throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
-        }
-    }
-
-    private static void loadFromDisk() {
-        if (!Files.exists(DATA_FILE)) {
-            return;
-        }
-        try {
-            List<String> lines = Files.readAllLines(DATA_FILE);
-            for (String line : lines) {
-                Task t = deserialize(line);
-                if (t != null) {
-                    tasks.add(t);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(" (warning: could not load saved tasks: " + e.getMessage() + ")");
-        }
-    }
-
-    private static void saveToDisk() {
-        try {
-            Files.createDirectories(DATA_FILE.getParent());
-            try (PrintWriter pw = new PrintWriter(DATA_FILE.toFile())) {
-                for (Task t : tasks) {
-                    pw.println(t.serialize());
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(" (warning: could not save tasks: " + e.getMessage() + ")");
-        }
-    }
-
-    private static Task deserialize(String line) {
-        String[] parts = line.split(" \\| ");
-        if (parts.length < 3) {
-            return null;
-        }
-        boolean done = parts[1].equals("1");
-        Task t;
-        try {
-            switch (parts[0]) {
-            case "T":
-                t = new Todo(parts[2]);
-                break;
-            case "D":
-                if (parts.length < 4) return null;
-                t = new Deadline(parts[2], parts[3]);
-                break;
-            case "E":
-                if (parts.length < 5) return null;
-                t = new Event(parts[2], parts[3], parts[4]);
-                break;
-            default:
-                return null;
-            }
-        } catch (ChinException e) {
-            return null;
-        }
-        if (done) t.mark();
-        return t;
+    public static void main(String[] args) {
+        new Chin(Path.of("data", "chin.txt")).run();
     }
 }
