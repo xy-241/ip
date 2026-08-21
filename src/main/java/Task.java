@@ -23,4 +23,8 @@ public class Task {
     public String toString() {
         return statusIcon() + " " + description;
     }
+
+    public String serialize() {
+        return (isDone ? "1" : "0") + " | " + description;
+    }
 }
