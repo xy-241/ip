@@ -1,4 +1,14 @@
+package chin;
+
 import java.nio.file.Path;
+
+import chin.task.Task;
+import chin.util.ChinException;
+import chin.util.Command;
+import chin.util.Parser;
+import chin.util.Storage;
+import chin.util.TaskList;
+import chin.util.Ui;
 
 public class Chin {
     private final Ui ui;
