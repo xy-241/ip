@@ -1,3 +1,10 @@
+package chin.util;
+
+import chin.task.Deadline;
+import chin.task.Event;
+import chin.task.Task;
+import chin.task.Todo;
+
 public class Parser {
     public static Task parseNewTask(Command cmd, String input) throws ChinException {
         switch (cmd) {
