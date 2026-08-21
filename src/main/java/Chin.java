@@ -170,19 +170,23 @@ public class Chin {
         }
         boolean done = parts[1].equals("1");
         Task t;
-        switch (parts[0]) {
-        case "T":
-            t = new Todo(parts[2]);
-            break;
-        case "D":
-            if (parts.length < 4) return null;
-            t = new Deadline(parts[2], parts[3]);
-            break;
-        case "E":
-            if (parts.length < 5) return null;
-            t = new Event(parts[2], parts[3], parts[4]);
-            break;
-        default:
+        try {
+            switch (parts[0]) {
+            case "T":
+                t = new Todo(parts[2]);
+                break;
+            case "D":
+                if (parts.length < 4) return null;
+                t = new Deadline(parts[2], parts[3]);
+                break;
+            case "E":
+                if (parts.length < 5) return null;
+                t = new Event(parts[2], parts[3], parts[4]);
+                break;
+            default:
+                return null;
+            }
+        } catch (ChinException e) {
             return null;
         }
         if (done) t.mark();
