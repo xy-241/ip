@@ -10,17 +10,29 @@ import chin.util.Storage;
 import chin.util.TaskList;
 import chin.util.Ui;
 
+/**
+ * Entry point of the Chin chatbot. Wires together {@link Ui}, {@link Storage},
+ * and {@link TaskList}, then runs the command loop until the user exits.
+ */
 public class Chin {
     private final Ui ui;
     private final Storage storage;
     private final TaskList tasks;
 
+    /**
+     * Creates a new Chin instance backed by the given data file.
+     *
+     * @param dataFile path to the persistent task file
+     */
     public Chin(Path dataFile) {
         this.ui = new Ui();
         this.storage = new Storage(dataFile);
         this.tasks = new TaskList(storage.load());
     }
 
+    /**
+     * Runs the interactive read-eval loop until the user issues {@code bye}.
+     */
     public void run() {
         ui.showWelcome();
         while (true) {
@@ -85,6 +97,9 @@ public class Chin {
         }
     }
 
+    /**
+     * Program entry point.
+     */
     public static void main(String[] args) {
         new Chin(Path.of("data", "chin.txt")).run();
     }
