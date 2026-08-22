@@ -35,4 +35,15 @@ public class TaskList {
     public List<Task> asList() {
         return tasks;
     }
+
+    public List<Task> find(String keyword) {
+        List<Task> matches = new ArrayList<>();
+        String needle = keyword.toLowerCase();
+        for (Task t : tasks) {
+            if (t.toString().toLowerCase().contains(needle)) {
+                matches.add(t);
+            }
+        }
+        return matches;
+    }
 }
