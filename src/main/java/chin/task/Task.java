@@ -29,13 +29,13 @@ public class Task {
     }
 
     /** Returns the {@code [X]}/{@code [ ]} status icon. */
-    protected String statusIcon() {
+    protected String getStatusIcon() {
         return "[" + (isDone ? "X" : " ") + "]";
     }
 
     @Override
     public String toString() {
-        return statusIcon() + " " + description;
+        return getStatusIcon() + " " + description;
     }
 
     /** Returns a pipe-separated line for {@link chin.util.Storage} to persist. */

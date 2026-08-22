@@ -22,11 +22,11 @@ public class Chin {
     /**
      * Creates a new Chin instance backed by the given data file.
      *
-     * @param dataFile path to the persistent task file
+     * @param dataPath path to the persistent task file
      */
-    public Chin(Path dataFile) {
+    public Chin(Path dataPath) {
         this.ui = new Ui();
-        this.storage = new Storage(dataFile);
+        this.storage = new Storage(dataPath);
         this.tasks = new TaskList(storage.load());
     }
 
