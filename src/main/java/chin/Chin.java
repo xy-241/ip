@@ -15,9 +15,9 @@ public class Chin {
     private final Storage storage;
     private final TaskList tasks;
 
-    public Chin(Path dataFile) {
+    public Chin(Path dataPath) {
         this.ui = new Ui();
-        this.storage = new Storage(dataFile);
+        this.storage = new Storage(dataPath);
         this.tasks = new TaskList(storage.load());
     }
 
