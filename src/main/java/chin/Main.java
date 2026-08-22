@@ -1,5 +1,7 @@
 package chin;
 
+import java.nio.file.Path;
+
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,10 +15,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 /**
- * Tutorial Part 2: add layout scaffolding with a scrollable message area,
- * a text input field, and a send button. Behaviour comes in Part 3.
+ * Tutorial Part 3: wire the send button so user input drives a Chin response
+ * and both messages appear in the scroll pane.
  */
 public class Main extends Application {
+    private final Chin chin = new Chin(Path.of("data", "chin.txt"));
     private final VBox messages = new VBox(6);
     private final ScrollPane scroll = new ScrollPane(messages);
     private final TextField input = new TextField();
@@ -32,9 +35,23 @@ public class Main extends Application {
         VBox root = new VBox(6, scroll, bottom);
         messages.getChildren().add(new Label("Chin: Hello! What can I do for you?"));
 
+        send.setOnAction(e -> handleUserInput());
+        input.setOnAction(e -> handleUserInput());
+
         Scene scene = new Scene(root, 400, 600);
         stage.setTitle("Chin");
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void handleUserInput() {
+        String text = input.getText();
+        if (text.isBlank()) {
+            return;
+        }
+        messages.getChildren().add(new Label("You: " + text));
+        messages.getChildren().add(new Label("Chin: " + chin.getResponse(text)));
+        input.clear();
+        scroll.setVvalue(1.0);
     }
 }
