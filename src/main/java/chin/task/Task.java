@@ -17,13 +17,13 @@ public class Task {
         this.isDone = false;
     }
 
-    protected String statusIcon() {
+    protected String getStatusIcon() {
         return "[" + (isDone ? "X" : " ") + "]";
     }
 
     @Override
     public String toString() {
-        return statusIcon() + " " + description;
+        return getStatusIcon() + " " + description;
     }
 
     public String serialize() {
