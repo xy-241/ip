@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
 repositories {
@@ -11,6 +12,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+javafx {
+    version = '21.0.2'
+    modules = ['javafx.controls', 'javafx.fxml']
 }
 
 dependencies {
@@ -26,7 +32,7 @@ test {
 }
 
 application {
-    mainClass = 'chin.Chin'
+    mainClass = 'chin.Launcher'
 }
 
 run {
