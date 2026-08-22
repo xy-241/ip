@@ -53,6 +53,31 @@ public class Chin {
         ui.showGoodbye();
     }
 
+    /**
+     * Processes a single input line and returns the response as a string,
+     * without printing to stdout. Used by the JavaFX GUI in {@link Main}.
+     */
+    public String getResponse(String input) {
+        Command cmd = Command.fromInput(input);
+        if (cmd == Command.BYE) {
+            return "Bye. Hope to see you again soon!";
+        }
+        java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream saved = System.out;
+        System.setOut(new java.io.PrintStream(buf));
+        try {
+            try {
+                handle(cmd, input);
+                storage.save(tasks.asList());
+            } catch (ChinException e) {
+                System.out.println(" " + e.getMessage());
+            }
+        } finally {
+            System.setOut(saved);
+        }
+        return buf.toString().stripTrailing();
+    }
+
     private void handle(Command cmd, String input) throws ChinException {
         switch (cmd) {
         case LIST:
