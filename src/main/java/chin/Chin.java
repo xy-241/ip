@@ -82,6 +82,22 @@ public class Chin {
             ui.show("Now you have " + tasks.size() + " tasks in the list.");
             return;
         }
+        case FIND: {
+            String keyword = input.length() > 4 ? input.substring(5).trim() : "";
+            if (keyword.isEmpty()) {
+                throw new ChinException("OOPS!!! Please give a keyword to find.");
+            }
+            java.util.List<Task> matches = tasks.find(keyword);
+            if (matches.isEmpty()) {
+                ui.show("No matching tasks found.");
+            } else {
+                ui.show("Here are the matching tasks in your list:");
+                for (int i = 0; i < matches.size(); i++) {
+                    ui.show((i + 1) + "." + matches.get(i));
+                }
+            }
+            return;
+        }
         case TODO:
         case DEADLINE:
         case EVENT: {
