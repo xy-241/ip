@@ -1,7 +1,13 @@
 plugins {
     id 'java'
     id 'application'
+    id 'checkstyle'
     id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+checkstyle {
+    toolVersion = '10.2'
+    configDirectory = file("$rootDir/config/checkstyle")
 }
 
 repositories {

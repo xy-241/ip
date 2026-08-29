@@ -12,13 +12,19 @@ import chin.task.Event;
 import chin.task.Task;
 import chin.task.Todo;
 
+/**
+ * Reads and writes the persistent task list at a given file path. Each line
+ * is a pipe-separated record produced by {@link Task#serialize()}.
+ */
 public class Storage {
     private final Path file;
 
+    /** Creates a storage backed by the given file path. */
     public Storage(Path file) {
         this.file = file;
     }
 
+    /** Loads tasks from disk, or returns an empty list if the file is absent. */
     public ArrayList<Task> load() {
         ArrayList<Task> loaded = new ArrayList<>();
         if (!Files.exists(file)) {
@@ -38,6 +44,7 @@ public class Storage {
         return loaded;
     }
 
+    /** Overwrites the file with the current task list, one record per line. */
     public void save(List<Task> tasks) {
         try {
             Files.createDirectories(file.getParent());
@@ -64,11 +71,15 @@ public class Storage {
                 t = new Todo(parts[2]);
                 break;
             case "D":
-                if (parts.length < 4) return null;
+                if (parts.length < 4) {
+                    return null;
+                }
                 t = new Deadline(parts[2], parts[3]);
                 break;
             case "E":
-                if (parts.length < 5) return null;
+                if (parts.length < 5) {
+                    return null;
+                }
                 t = new Event(parts[2], parts[3], parts[4]);
                 break;
             default:
@@ -77,7 +88,9 @@ public class Storage {
         } catch (ChinException e) {
             return null;
         }
-        if (done) t.mark();
+        if (done) {
+            t.mark();
+        }
         return t;
     }
 }

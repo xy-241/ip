@@ -5,7 +5,13 @@ import chin.task.Event;
 import chin.task.Task;
 import chin.task.Todo;
 
+/**
+ * Parses raw user input strings into concrete {@link Task} instances and
+ * validates command indices. Throws {@link ChinException} with a friendly
+ * message when input is malformed.
+ */
 public class Parser {
+    /** Builds a new task from the raw input for a {@code todo/deadline/event} command. */
     public static Task parseNewTask(Command cmd, String input) throws ChinException {
         switch (cmd) {
         case TODO: {
@@ -42,6 +48,7 @@ public class Parser {
         }
     }
 
+    /** Parses a 1-based index string and returns the zero-based index if in range. */
     public static int parseIndex(String s, int size) throws ChinException {
         try {
             int idx = Integer.parseInt(s.trim()) - 1;
