@@ -2,13 +2,18 @@ package chin;
 
 import java.nio.file.Path;
 
+import chin.util.Command;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
- * FXML controller for the chat window.
+ * FXML controller for the chat window. Wires input to {@link Chin#getResponse}
+ * and closes the window on the {@code bye} command.
  */
 public class MainWindow {
     @FXML private ScrollPane scroll;
@@ -29,8 +34,16 @@ public class MainWindow {
             return;
         }
         messages.getChildren().add(DialogBox.forUser(text));
-        messages.getChildren().add(DialogBox.forChin(chin.getResponse(text)));
+        String response = chin.getResponse(text);
+        messages.getChildren().add(DialogBox.forChin(response));
         input.clear();
         scroll.setVvalue(1.0);
+
+        if (Command.fromInput(text) == Command.BYE) {
+            input.setDisable(true);
+            PauseTransition pause = new PauseTransition(Duration.seconds(1));
+            pause.setOnFinished(e -> Platform.exit());
+            pause.play();
+        }
     }
 }
