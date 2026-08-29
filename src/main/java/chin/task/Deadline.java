@@ -6,10 +6,15 @@ import java.time.format.DateTimeParseException;
 
 import chin.util.ChinException;
 
+/**
+ * A task with an ISO {@link LocalDate} deadline, rendered as
+ * {@code [D][ ] desc (by: MMM d yyyy)}.
+ */
 public class Deadline extends Task {
     private static final DateTimeFormatter DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
     private final LocalDate by;
 
+    /** Creates a deadline; {@code by} must be in {@code yyyy-MM-dd} form. */
     public Deadline(String description, String by) throws ChinException {
         super(description);
         try {

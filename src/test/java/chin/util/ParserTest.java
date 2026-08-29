@@ -34,14 +34,14 @@ public class ParserTest {
 
     @Test
     public void parseNewTask_deadlineMissingBy_throws() {
-        assertThrows(ChinException.class,
-                () -> Parser.parseNewTask(Command.DEADLINE, "deadline return"));
+        assertThrows(ChinException.class, () ->
+                Parser.parseNewTask(Command.DEADLINE, "deadline return"));
     }
 
     @Test
     public void parseNewTask_deadlineBadDate_throws() {
-        assertThrows(ChinException.class,
-                () -> Parser.parseNewTask(Command.DEADLINE, "deadline return /by tomorrow"));
+        assertThrows(ChinException.class, () ->
+                Parser.parseNewTask(Command.DEADLINE, "deadline return /by tomorrow"));
     }
 
     @Test
