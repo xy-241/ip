@@ -33,9 +33,9 @@ public class Storage {
         try {
             List<String> lines = Files.readAllLines(file);
             for (String line : lines) {
-                Task t = deserialize(line);
-                if (t != null) {
-                    loaded.add(t);
+                Task task = deserialize(line);
+                if (task != null) {
+                    loaded.add(task);
                 }
             }
         } catch (IOException e) {
@@ -49,8 +49,8 @@ public class Storage {
         try {
             Files.createDirectories(file.getParent());
             try (PrintWriter pw = new PrintWriter(file.toFile())) {
-                for (Task t : tasks) {
-                    pw.println(t.serialize());
+                for (Task task : tasks) {
+                    pw.println(task.serialize());
                 }
             }
         } catch (IOException e) {
@@ -63,24 +63,24 @@ public class Storage {
         if (parts.length < 3) {
             return null;
         }
-        boolean done = parts[1].equals("1");
-        Task t;
+        boolean isDone = parts[1].equals("1");
+        Task task;
         try {
             switch (parts[0]) {
             case "T":
-                t = new Todo(parts[2]);
+                task = new Todo(parts[2]);
                 break;
             case "D":
                 if (parts.length < 4) {
                     return null;
                 }
-                t = new Deadline(parts[2], parts[3]);
+                task = new Deadline(parts[2], parts[3]);
                 break;
             case "E":
                 if (parts.length < 5) {
                     return null;
                 }
-                t = new Event(parts[2], parts[3], parts[4]);
+                task = new Event(parts[2], parts[3], parts[4]);
                 break;
             default:
                 return null;
@@ -88,9 +88,9 @@ public class Storage {
         } catch (ChinException e) {
             return null;
         }
-        if (done) {
-            t.mark();
+        if (isDone) {
+            task.mark();
         }
-        return t;
+        return task;
     }
 }
