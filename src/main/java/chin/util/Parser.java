@@ -13,6 +13,8 @@ import chin.task.Todo;
 public class Parser {
     /** Builds a new task from the raw input for a {@code todo/deadline/event} command. */
     public static Task parseNewTask(Command cmd, String input) throws ChinException {
+        assert cmd != null : "command must not be null";
+        assert input != null : "input must not be null";
         switch (cmd) {
         case TODO: {
             String desc = input.length() > 4 ? input.substring(5).trim() : "";
@@ -50,11 +52,14 @@ public class Parser {
 
     /** Parses a 1-based index string and returns the zero-based index if in range. */
     public static int parseIndex(String s, int size) throws ChinException {
+        assert s != null : "index input must not be null";
+        assert size >= 0 : "task list size must be non-negative";
         try {
             int idx = Integer.parseInt(s.trim()) - 1;
             if (idx < 0 || idx >= size) {
                 throw new ChinException("OOPS!!! That task number is out of range.");
             }
+            assert idx >= 0 && idx < size : "post-condition: idx must be in range";
             return idx;
         } catch (NumberFormatException e) {
             throw new ChinException("OOPS!!! Task number must be an integer.");
