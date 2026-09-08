@@ -25,25 +25,26 @@ public class Parser {
         }
         case DEADLINE: {
             String body = input.length() > 8 ? input.substring(9) : "";
-            int i = body.indexOf(" /by ");
-            if (i < 0 || body.substring(0, i).trim().isEmpty() || body.substring(i + 5).trim().isEmpty()) {
+            int byIdx = body.indexOf(" /by ");
+            if (byIdx < 0 || body.substring(0, byIdx).trim().isEmpty()
+                    || body.substring(byIdx + 5).trim().isEmpty()) {
                 throw new ChinException("OOPS!!! A deadline needs a description and ' /by <when>'.");
             }
-            return new Deadline(body.substring(0, i).trim(), body.substring(i + 5).trim());
+            return new Deadline(body.substring(0, byIdx).trim(), body.substring(byIdx + 5).trim());
         }
         case EVENT: {
             String body = input.length() > 5 ? input.substring(6) : "";
-            int f = body.indexOf(" /from ");
-            int t = body.indexOf(" /to ");
-            if (f < 0 || t < 0 || t < f
-                    || body.substring(0, f).trim().isEmpty()
-                    || body.substring(f + 7, t).trim().isEmpty()
-                    || body.substring(t + 5).trim().isEmpty()) {
+            int fromIdx = body.indexOf(" /from ");
+            int toIdx = body.indexOf(" /to ");
+            if (fromIdx < 0 || toIdx < 0 || toIdx < fromIdx
+                    || body.substring(0, fromIdx).trim().isEmpty()
+                    || body.substring(fromIdx + 7, toIdx).trim().isEmpty()
+                    || body.substring(toIdx + 5).trim().isEmpty()) {
                 throw new ChinException("OOPS!!! An event needs a description, ' /from <start>' and ' /to <end>'.");
             }
-            return new Event(body.substring(0, f).trim(),
-                    body.substring(f + 7, t).trim(),
-                    body.substring(t + 5).trim());
+            return new Event(body.substring(0, fromIdx).trim(),
+                    body.substring(fromIdx + 7, toIdx).trim(),
+                    body.substring(toIdx + 5).trim());
         }
         default:
             throw new ChinException("OOPS!!! I'm sorry, but I don't know what that means :-(");
@@ -51,11 +52,11 @@ public class Parser {
     }
 
     /** Parses a 1-based index string and returns the zero-based index if in range. */
-    public static int parseIndex(String s, int size) throws ChinException {
-        assert s != null : "index input must not be null";
+    public static int parseIndex(String indexInput, int size) throws ChinException {
+        assert indexInput != null : "index input must not be null";
         assert size >= 0 : "task list size must be non-negative";
         try {
-            int idx = Integer.parseInt(s.trim()) - 1;
+            int idx = Integer.parseInt(indexInput.trim()) - 1;
             if (idx < 0 || idx >= size) {
                 throw new ChinException("OOPS!!! That task number is out of range.");
             }

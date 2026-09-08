@@ -8,8 +8,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 /**
- * Tutorial Part 4: a styled dialog row with a coloured avatar and a
- * padded label. Used for both user and Chin messages in the chat.
+ * A styled dialog row with a coloured avatar and a padded label.
+ * Used for both user and Chin messages in the chat.
  */
 public class DialogBox extends HBox {
     private static final double AVATAR_RADIUS = 16;
@@ -31,10 +31,12 @@ public class DialogBox extends HBox {
         }
     }
 
+    /** Creates a dialog box for a user message (blue avatar, right-aligned). */
     public static DialogBox forUser(String text) {
         return new DialogBox(text, Color.web("#4a90e2"), Pos.TOP_RIGHT);
     }
 
+    /** Creates a dialog box for a Chin reply (green avatar, left-aligned). */
     public static DialogBox forChin(String text) {
         return new DialogBox(text, Color.web("#7ed321"), Pos.TOP_LEFT);
     }
