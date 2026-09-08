@@ -21,6 +21,7 @@ public class Storage {
 
     /** Creates a storage backed by the given file path. */
     public Storage(Path file) {
+        assert file != null : "file path must not be null";
         this.file = file;
     }
 
@@ -46,6 +47,7 @@ public class Storage {
 
     /** Overwrites the file with the current task list, one record per line. */
     public void save(List<Task> tasks) {
+        assert tasks != null : "tasks must not be null";
         try {
             Files.createDirectories(file.getParent());
             try (PrintWriter pw = new PrintWriter(file.toFile())) {
