@@ -56,9 +56,14 @@ jar {
 
 shadowJar {
     archiveBaseName = 'chin'
-    archiveClassifier = ''
+    archiveClassifier = 'all'
     archiveVersion = ''
     manifest {
         attributes 'Main-Class': 'chin.Launcher'
     }
 }
+
+tasks.named('distTar') { dependsOn shadowJar }
+tasks.named('distZip') { dependsOn shadowJar }
+tasks.named('startScripts') { dependsOn shadowJar }
+tasks.named('startShadowScripts') { dependsOn jar }
