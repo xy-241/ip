@@ -8,7 +8,7 @@ import java.util.Scanner;
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
-    private final Scanner sc = new Scanner(System.in);
+    private final Scanner scanner = new Scanner(System.in);
 
     /** Prints the initial greeting frame. */
     public void showWelcome() {
@@ -32,7 +32,7 @@ public class Ui {
 
     /** Reads the next command line, returning {@code bye} on EOF. */
     public String readCommand() {
-        return sc.hasNextLine() ? sc.nextLine() : "bye";
+        return scanner.hasNextLine() ? scanner.nextLine() : "bye";
     }
 
     /** Prints a top-level message with one space of left padding. */

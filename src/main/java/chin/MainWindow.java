@@ -18,7 +18,7 @@ import javafx.util.Duration;
 public class MainWindow {
     @FXML private ScrollPane scroll;
     @FXML private VBox messages;
-    @FXML private TextField input;
+    @FXML private TextField inputField;
 
     private final Chin chin = new Chin(Path.of("data", "chin.txt"));
 
@@ -29,18 +29,18 @@ public class MainWindow {
 
     @FXML
     private void handleUserInput() {
-        String text = input.getText();
+        String text = inputField.getText();
         if (text.isBlank()) {
             return;
         }
         messages.getChildren().add(DialogBox.forUser(text));
         String response = chin.getResponse(text);
         messages.getChildren().add(DialogBox.forChin(response));
-        input.clear();
+        inputField.clear();
         scroll.setVvalue(1.0);
 
         if (Command.fromInput(text) == Command.BYE) {
-            input.setDisable(true);
+            inputField.setDisable(true);
             PauseTransition pause = new PauseTransition(Duration.seconds(1));
             pause.setOnFinished(e -> Platform.exit());
             pause.play();
