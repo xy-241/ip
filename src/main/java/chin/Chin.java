@@ -1,6 +1,7 @@
 package chin;
 
 import java.nio.file.Path;
+import java.util.stream.IntStream;
 
 import chin.task.Task;
 import chin.util.ChinException;
@@ -81,9 +82,8 @@ public class Chin {
     private void handle(Command cmd, String input) throws ChinException {
         switch (cmd) {
         case LIST:
-            for (int i = 0; i < tasks.size(); i++) {
-                ui.show((i + 1) + "." + tasks.get(i));
-            }
+            IntStream.range(0, tasks.size())
+                    .forEach(i -> ui.show((i + 1) + "." + tasks.get(i)));
             return;
         case MARK: {
             int idx = Parser.parseIndex(input.substring(5), tasks.size());
@@ -117,9 +117,8 @@ public class Chin {
                 ui.show("No matching tasks found.");
             } else {
                 ui.show("Here are the matching tasks in your list:");
-                for (int i = 0; i < matches.size(); i++) {
-                    ui.show((i + 1) + "." + matches.get(i));
-                }
+                IntStream.range(0, matches.size())
+                        .forEach(i -> ui.show((i + 1) + "." + matches.get(i)));
             }
             return;
         }
