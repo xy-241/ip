@@ -19,6 +19,7 @@ public class TaskList {
 
     /** Creates a task list initialised from {@code initial}. */
     public TaskList(List<Task> initial) {
+        assert initial != null : "initial task list must not be null";
         this.tasks = new ArrayList<>(initial);
     }
 
@@ -28,18 +29,21 @@ public class TaskList {
     }
 
     /** Returns the task at the given zero-based index. */
-    public Task get(int i) {
-        return tasks.get(i);
+    public Task get(int index) {
+        assert index >= 0 && index < tasks.size() : "index " + index + " out of range";
+        return tasks.get(index);
     }
 
     /** Appends a task to the end of the list. */
-    public void add(Task t) {
-        tasks.add(t);
+    public void add(Task task) {
+        assert task != null : "task must not be null";
+        tasks.add(task);
     }
 
     /** Removes and returns the task at the given zero-based index. */
-    public Task remove(int i) {
-        return tasks.remove(i);
+    public Task remove(int index) {
+        assert index >= 0 && index < tasks.size() : "index " + index + " out of range";
+        return tasks.remove(index);
     }
 
     /** Returns the backing list as a read-through view for callers like storage. */
@@ -49,9 +53,10 @@ public class TaskList {
 
     /** Returns tasks whose string form contains {@code keyword} (case-insensitive). */
     public List<Task> find(String keyword) {
-        String needle = keyword.toLowerCase();
+        assert keyword != null : "keyword must not be null";
+        String lowerKeyword = keyword.toLowerCase();
         return tasks.stream()
-                .filter(t -> t.toString().toLowerCase().contains(needle))
+                .filter(task -> task.toString().toLowerCase().contains(lowerKeyword))
                 .collect(Collectors.toList());
     }
 }
