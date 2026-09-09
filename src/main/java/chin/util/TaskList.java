@@ -2,6 +2,7 @@ package chin.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import chin.task.Task;
 
@@ -48,13 +49,9 @@ public class TaskList {
 
     /** Returns tasks whose string form contains {@code keyword} (case-insensitive). */
     public List<Task> find(String keyword) {
-        List<Task> matches = new ArrayList<>();
         String needle = keyword.toLowerCase();
-        for (Task t : tasks) {
-            if (t.toString().toLowerCase().contains(needle)) {
-                matches.add(t);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(t -> t.toString().toLowerCase().contains(needle))
+                .collect(Collectors.toList());
     }
 }
