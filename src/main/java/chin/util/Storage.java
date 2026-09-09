@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import chin.task.Deadline;
 import chin.task.Event;
@@ -27,22 +29,18 @@ public class Storage {
 
     /** Loads tasks from disk, or returns an empty list if the file is absent. */
     public ArrayList<Task> load() {
-        ArrayList<Task> loaded = new ArrayList<>();
         if (!Files.exists(file)) {
-            return loaded;
+            return new ArrayList<>();
         }
         try {
-            List<String> lines = Files.readAllLines(file);
-            for (String line : lines) {
-                Task task = deserialize(line);
-                if (task != null) {
-                    loaded.add(task);
-                }
-            }
+            return Files.readAllLines(file).stream()
+                    .map(this::deserialize)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toCollection(ArrayList::new));
         } catch (IOException e) {
             System.out.println(" (warning: could not load saved tasks: " + e.getMessage() + ")");
+            return new ArrayList<>();
         }
-        return loaded;
     }
 
     /** Overwrites the file with the current task list, one record per line. */
@@ -51,9 +49,7 @@ public class Storage {
         try {
             Files.createDirectories(file.getParent());
             try (PrintWriter pw = new PrintWriter(file.toFile())) {
-                for (Task task : tasks) {
-                    pw.println(task.serialize());
-                }
+                tasks.stream().map(Task::serialize).forEach(pw::println);
             }
         } catch (IOException e) {
             System.out.println(" (warning: could not save tasks: " + e.getMessage() + ")");
