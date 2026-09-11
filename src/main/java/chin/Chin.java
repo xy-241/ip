@@ -63,7 +63,7 @@ public class Chin {
     public String getResponse(String userInput) {
         Command cmd = Command.fromInput(userInput);
         if (cmd == Command.BYE) {
-            return "Bye. Hope to see you again soon!";
+            return "Catch you later. Don't forget the deadlines.";
         }
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
         PrintStream originalOut = System.out;
@@ -90,23 +90,23 @@ public class Chin {
         case MARK: {
             int idx = Parser.parseIndex(userInput.substring(5), tasks.size());
             tasks.get(idx).mark();
-            ui.show("Nice! I've marked this task as done:");
+            ui.show("Boom. Marked as done:");
             ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case UNMARK: {
             int idx = Parser.parseIndex(userInput.substring(7), tasks.size());
             tasks.get(idx).unmark();
-            ui.show("OK, I've marked this task as not done yet:");
+            ui.show("Alright, back on your plate:");
             ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case DELETE: {
             int idx = Parser.parseIndex(userInput.substring(7), tasks.size());
             Task removed = tasks.remove(idx);
-            ui.show("Noted. I've removed this task:");
+            ui.show("Poof. Gone:");
             ui.showIndented(removed.toString());
-            ui.show("Now you have " + tasks.size() + " tasks in the list.");
+            ui.show("You now have " + tasks.size() + " task" + (tasks.size() == 1 ? "" : "s") + " left.");
             return;
         }
         case SORT: {
@@ -139,9 +139,9 @@ public class Chin {
         case EVENT: {
             Task task = Parser.parseNewTask(cmd, userInput);
             tasks.add(task);
-            ui.show("Got it. I've added this task:");
+            ui.show("Locked in. Added to the pile:");
             ui.showIndented(task.toString());
-            ui.show("Now you have " + tasks.size() + " tasks in the list.");
+            ui.show("You now have " + tasks.size() + " task" + (tasks.size() == 1 ? "" : "s") + " on the list.");
             return;
         }
         default:
