@@ -55,15 +55,26 @@ public class Parser {
     public static int parseIndex(String indexInput, int size) throws ChinException {
         assert indexInput != null : "index input must not be null";
         assert size >= 0 : "task list size must be non-negative";
+        String trimmed = indexInput.trim();
+        if (trimmed.isEmpty()) {
+            throw new ChinException("OOPS!!! Please give me a task number, e.g. `mark 1`.");
+        }
+        if (size == 0) {
+            throw new ChinException("OOPS!!! Your list is empty. Add a task first.");
+        }
         try {
-            int idx = Integer.parseInt(indexInput.trim()) - 1;
-            if (idx < 0 || idx >= size) {
-                throw new ChinException("OOPS!!! That task number is out of range.");
+            int idx = Integer.parseInt(trimmed) - 1;
+            if (idx < 0) {
+                throw new ChinException("OOPS!!! Task numbers start at 1, not " + (idx + 1) + ".");
+            }
+            if (idx >= size) {
+                throw new ChinException("OOPS!!! You only have " + size + " task"
+                        + (size == 1 ? "" : "s") + ", so " + (idx + 1) + " is out of range.");
             }
             assert idx >= 0 && idx < size : "post-condition: idx must be in range";
             return idx;
         } catch (NumberFormatException e) {
-            throw new ChinException("OOPS!!! Task number must be an integer.");
+            throw new ChinException("OOPS!!! `" + trimmed + "` isn't a whole number.");
         }
     }
 }

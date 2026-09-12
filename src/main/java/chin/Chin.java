@@ -81,28 +81,37 @@ public class Chin {
         return buf.toString().stripTrailing();
     }
 
+    /** Returns the argument portion of {@code input} after the given command prefix, safely. */
+    private static String stripCommand(String input, String prefix) {
+        int cut = prefix.length();
+        return input.length() > cut ? input.substring(cut + 1).trim() : "";
+    }
+
     private void executeCommand(Command cmd, String userInput) throws ChinException {
+        if (cmd == Command.UNKNOWN && userInput.trim().isEmpty()) {
+            throw new ChinException("OOPS!!! Empty input. Try `list`, `help`, or `todo <task>`.");
+        }
         switch (cmd) {
         case LIST:
             IntStream.range(0, tasks.size())
                     .forEach(i -> ui.show((i + 1) + "." + tasks.get(i)));
             return;
         case MARK: {
-            int idx = Parser.parseIndex(userInput.substring(5), tasks.size());
+            int idx = Parser.parseIndex(stripCommand(userInput, "mark"), tasks.size());
             tasks.get(idx).mark();
             ui.show("Boom. Marked as done:");
             ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case UNMARK: {
-            int idx = Parser.parseIndex(userInput.substring(7), tasks.size());
+            int idx = Parser.parseIndex(stripCommand(userInput, "unmark"), tasks.size());
             tasks.get(idx).unmark();
             ui.show("Alright, back on your plate:");
             ui.showIndented(tasks.get(idx).toString());
             return;
         }
         case DELETE: {
-            int idx = Parser.parseIndex(userInput.substring(7), tasks.size());
+            int idx = Parser.parseIndex(stripCommand(userInput, "delete"), tasks.size());
             Task removed = tasks.remove(idx);
             ui.show("Poof. Gone:");
             ui.showIndented(removed.toString());
@@ -118,9 +127,9 @@ public class Chin {
             return;
         }
         case FIND: {
-            String keyword = userInput.length() > 4 ? userInput.substring(5).trim() : "";
+            String keyword = stripCommand(userInput, "find");
             if (keyword.isEmpty()) {
-                throw new ChinException("OOPS!!! Please give a keyword to find.");
+                throw new ChinException("OOPS!!! Please give a keyword to find, e.g. `find book`.");
             }
             java.util.List<Task> matches = tasks.find(keyword);
             if (matches.isEmpty()) {
