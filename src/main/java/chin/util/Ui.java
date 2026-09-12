@@ -10,18 +10,19 @@ public class Ui {
     private static final String LINE = "____________________________________________________________";
     private final Scanner scanner = new Scanner(System.in);
 
-    /** Prints the initial greeting frame. */
+    /** Prints the initial greeting frame with Chin's signature voice. */
     public void showWelcome() {
         System.out.println(LINE);
-        System.out.println(" Hello! I'm Chin");
-        System.out.println(" What can I do for you?");
+        System.out.println(" Yo. Chin here.");
+        System.out.println(" Feed me your to-dos, deadlines, or events.");
+        System.out.println(" I'll keep them tidy while you go grab a coffee.");
         System.out.println(LINE);
     }
 
-    /** Prints the farewell frame. */
+    /** Prints the farewell frame with Chin's send-off. */
     public void showGoodbye() {
         System.out.println(LINE);
-        System.out.println(" Bye. Hope to see you again soon!");
+        System.out.println(" Catch you later. Don't forget the deadlines.");
         System.out.println(LINE);
     }
 
