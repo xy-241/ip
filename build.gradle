@@ -6,6 +6,8 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
+version = '0.1'
+
 checkstyle {
     toolVersion = '10.2'
     configDirectory = file("$rootDir/config/checkstyle")
