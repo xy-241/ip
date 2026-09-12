@@ -18,7 +18,7 @@
     </ScrollPane>
     <HBox spacing="8" alignment="CENTER">
         <padding><Insets top="8" right="8" bottom="8" left="8"/></padding>
-        <TextField fx:id="input" promptText="Type a message..." HBox.hgrow="ALWAYS"
+        <TextField fx:id="inputField" promptText="Type a message..." HBox.hgrow="ALWAYS"
                    onAction="#handleUserInput"/>
         <Button fx:id="send" text="Send" onAction="#handleUserInput"
                 style="-fx-background-color: #4a90e2; -fx-text-fill: white; -fx-background-radius: 6;"/>
